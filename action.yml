@@ -1,10 +1,29 @@
-name: 'Your name here'
-description: 'Provide a description here'
+# Docs: https://help.github.com/en/actions/building-actions/metadata-syntax-for-github-actions
+name: 'golangci-lint'
+description: 'Lint your Go code'
 author: 'Your name or organization here'
+branding:
+  icon: check-square
+  color: green
 inputs:
-  myInput:              # change this
-    description: 'input description here'
-    default: 'default value if applicable'
+  version:
+    description: 'The golangci-lint version to use'
+    required: true
+  checksum:
+    description: 'The checksum used to verify the golangci-lint download'
+    default: ''
+    required: false
+  args:
+    description: 'Arguments to pass to golangci-lint'
+    required: false
+  failOnFixable:
+    description: 'Fail the job if any auto-fixable issue has been found'
+    default: 'true'
+    required: false
+  failOnIssue:
+    description: 'Fail the job if any issue has been found'
+    default: 'false'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'
