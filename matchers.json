@@ -1,0 +1,18 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "golangci-lint",
+      "pattern": [
+        {
+          "regexp": "^golangci-lint::(.+),line=(\\d+),col=(\\d+),severity=([a-zA-Z]+),code=([a-zA-Z1-9]+)::(.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        }
+      ]
+    }
+  ]
+}
