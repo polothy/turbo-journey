@@ -1,18 +1,29 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import {installer} from './installer'
+import {lint, report} from './lint'
+import {getInputBoolean} from './input'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    const version = core.getInput('version', {required: true})
+    const checksum = core.getInput('checksum')
+    const args = core.getInput('args')
+    const failOnIssue = getInputBoolean('failOnIssue')
+    const failOnFixable = getInputBoolean('failOnFixable')
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    await installer(version, checksum)
 
-    core.setOutput('time', new Date().toTimeString())
+    const linter = await lint(args)
+    const fixable = report(linter)
+
+    if (failOnIssue && linter.Issues) {
+      core.setFailed('🔥 failing job due to finding lint issues')
+    }
+    if (failOnFixable && fixable) {
+      core.setFailed('🔥 failing job due to finding auto-fixable lint issues')
+    }
   } catch (error) {
-    core.setFailed(error.message)
+    core.setFailed(`🔥 ${error.message}`)
   }
 }
 
