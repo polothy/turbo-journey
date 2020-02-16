@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import {wait} from './wait'
 import * as path from 'path'
+import * as os from 'os';
 
 async function run(): Promise<void> {
   try {
@@ -15,9 +16,13 @@ async function run(): Promise<void> {
 
     // add problem matchers
     const matchersPath = path.join(__dirname, '..', 'matchers.json')
-    console.log(`::[add-matcher]::${matchersPath}`)
-    console.log(
-      `golangci-lint::file=src/main.ts,line=1,col=5,severity=error,code=errcheck::You have problems`
+    // console.log(`::[add-matcher]::${matchersPath}`)
+    // console.log(
+    //   `golangci-lint::file=src/main.ts,line=1,col=5,severity=error,code=errcheck::You have problems`
+    // )
+    process.stdout.write(`::[add-matcher]::${matchersPath}`)
+    process.stdout.write(
+      `golangci-lint::file=src/main.ts,line=1,col=5,severity=error,code=errcheck::You have problems${os.EOL}`
     )
   } catch (error) {
     core.setFailed(error.message)
