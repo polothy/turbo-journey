@@ -1,0 +1,59 @@
+name: CD Workflow
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Integration test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          version: 1.23.6
+          checksum: 9a00786e1671f9ddbc8eeed51fe85825bcb10a2586ac8ab510c4ceb1ec499729
+          args: -E gofmt
+          failOnFixable: false
+
+  cd:
+    name: Validate and Release
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Test
+        run: |
+          npm install
+          npm run all
+
+      - name: Version
+        id: version
+        run: |
+          VERSION=v$(cat VERSION)
+          echo $VERSION
+
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          if git show-ref --tags --quiet --verify -- "refs/tags/$VERSION"; then
+            echo "::error file=VERSION,line=1,col=0::This version already exists, please bump according to semver."
+            return 1;
+          fi
+
+          echo "::set-env name=VERSION::$VERSION"
+          echo "::set-output name=version::$VERSION"
+
+      - name: Create Release ${{ steps.version.outputs.version }}
+        if: github.event_name == 'push'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          release_name: ${{ steps.version.outputs.version }}
