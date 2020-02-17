@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import {wait} from './wait'
 import * as path from 'path'
-import * as os from 'os';
+import * as os from 'os'
 
 async function run(): Promise<void> {
   try {
