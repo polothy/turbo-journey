@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import * as tc from '@actions/tool-cache'
 import * as sys from './system'
 import {exec} from '@actions/exec'
+import {existsSync} from 'fs'
 
 export const toolName = 'golangci-lint'
 
@@ -24,7 +25,8 @@ async function download(version: string): Promise<string> {
   const arch = sys.getArch()
   const platform = sys.getPlatform()
 
-  const downloadUrl = `https://github.com/golangci/golangci-lint/releases/download/v${version}/golangci-lint-${version}-${platform}-${arch}.tar.gz`
+  const name = `golangci-lint-${version}-${platform}-${arch}`
+  const downloadUrl = `https://github.com/golangci/golangci-lint/releases/download/v${version}/${name}.tar.gz`
   // const checksumUrl = `https://github.com/golangci/golangci-lint/releases/download/v${version}/golangci-lint-${version}-checksums.txt`
   let downloadPath = ''
 
@@ -46,5 +48,11 @@ async function download(version: string): Promise<string> {
   core.info(`📦 Extracting ${toolName}@v${version}...`)
 
   const extractPath = await tc.extractTar(downloadPath)
-  return await tc.cacheDir(extractPath, toolName, version)
+
+  // Bin is actually inside a folder from the tar
+  if (!existsSync(`${extractPath}/${name}/${toolName}`)) {
+    throw new Error(`failed to find ${toolName} v${version} in extracted path`)
+  }
+
+  return await tc.cacheDir(`${extractPath}/${name}`, toolName, version)
 }

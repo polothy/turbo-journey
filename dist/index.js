@@ -4594,6 +4594,7 @@ const core = __importStar(__webpack_require__(470));
 const tc = __importStar(__webpack_require__(533));
 const sys = __importStar(__webpack_require__(737));
 const exec_1 = __webpack_require__(986);
+const fs_1 = __webpack_require__(747);
 exports.toolName = 'golangci-lint';
 function installer(version) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -4613,7 +4614,8 @@ function download(version) {
     return __awaiter(this, void 0, void 0, function* () {
         const arch = sys.getArch();
         const platform = sys.getPlatform();
-        const downloadUrl = `https://github.com/golangci/golangci-lint/releases/download/v${version}/golangci-lint-${version}-${platform}-${arch}.tar.gz`;
+        const name = `golangci-lint-${version}-${platform}-${arch}`;
+        const downloadUrl = `https://github.com/golangci/golangci-lint/releases/download/v${version}/${name}.tar.gz`;
         // const checksumUrl = `https://github.com/golangci/golangci-lint/releases/download/v${version}/golangci-lint-${version}-checksums.txt`
         let downloadPath = '';
         core.info(`⬇️ Downloading ${downloadUrl}...`);
@@ -4628,7 +4630,11 @@ function download(version) {
         // See crypto.createHash at https://nodejs.org/api/crypto.html to hash a file.
         core.info(`📦 Extracting ${exports.toolName}@v${version}...`);
         const extractPath = yield tc.extractTar(downloadPath);
-        return yield tc.cacheDir(extractPath, exports.toolName, version);
+        // Bin is actually inside a folder from the tar
+        if (!fs_1.existsSync(`${extractPath}/${name}/${exports.toolName}`)) {
+            throw new Error(`failed to find ${exports.toolName} v${version} in extracted path`);
+        }
+        return yield tc.cacheDir(`${extractPath}/${name}`, exports.toolName, version);
     });
 }
 
