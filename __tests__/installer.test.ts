@@ -1,46 +1,43 @@
-import * as tc from "@actions/tool-cache";
-import {installer} from "../src/installer";
-import * as path from "path";
+import * as tc from '@actions/tool-cache'
+import {installer} from '../src/installer'
+import * as path from 'path'
 import * as osm from 'os'
 
-
 describe('installer', () => {
-  let os = {} as any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let os = {} as any
 
   // let inSpy: jest.SpyInstance;
-  let findSpy: jest.SpyInstance;
-  let cnSpy: jest.SpyInstance;
+  let findSpy: jest.SpyInstance
+  let cnSpy: jest.SpyInstance
   // let logSpy: jest.SpyInstance;
   // let getSpy: jest.SpyInstance;
-  let platSpy: jest.SpyInstance;
-  let archSpy: jest.SpyInstance;
-  let dlSpy: jest.SpyInstance;
-  let exSpy: jest.SpyInstance;
-  let cacheSpy: jest.SpyInstance;
+  let platSpy: jest.SpyInstance
+  let archSpy: jest.SpyInstance
+  let dlSpy: jest.SpyInstance
+  let exSpy: jest.SpyInstance
+  let cacheSpy: jest.SpyInstance
 
   beforeEach(() => {
     // node 'os'
-    os = {};
-    platSpy = jest.spyOn(osm, 'platform');
-    platSpy.mockImplementation(() => os['platform']);
-    archSpy = jest.spyOn(osm, 'arch');
-    archSpy.mockImplementation(() => os['arch']);
+    os = {}
+    platSpy = jest.spyOn(osm, 'platform')
+    platSpy.mockImplementation(async () => os['platform'])
+    archSpy = jest.spyOn(osm, 'arch')
+    archSpy.mockImplementation(async () => os['arch'])
 
     // @actions/tool-cache
-    findSpy = jest.spyOn(tc, 'find');
-    dlSpy = jest.spyOn(tc, 'downloadTool');
-    exSpy = jest.spyOn(tc, 'extractTar');
-    cacheSpy = jest.spyOn(tc, 'cacheDir');
+    findSpy = jest.spyOn(tc, 'find')
+    dlSpy = jest.spyOn(tc, 'downloadTool')
+    exSpy = jest.spyOn(tc, 'extractTar')
+    cacheSpy = jest.spyOn(tc, 'cacheDir')
     // getSpy = jest.spyOn(im, 'getVersions');
 
     // writes
-    cnSpy = jest.spyOn(process.stdout, 'write');
+    cnSpy = jest.spyOn(process.stdout, 'write')
     // logSpy = jest.spyOn(console, 'log');
     // getSpy.mockImplementation(() => <im.IGoVersion[]>goJsonData);
-    cnSpy.mockImplementation(line => {
-      // uncomment to debug
-      // process.stderr.write('write:' + line + '\n');
-    });
+    cnSpy.mockImplementation()
     // logSpy.mockImplementation(line => {
     //   // uncomment to debug
     //   // process.stderr.write('log:' + line + '\n');
@@ -48,56 +45,58 @@ describe('installer', () => {
   })
 
   afterEach(() => {
-    jest.resetAllMocks();
-    jest.clearAllMocks();
+    jest.resetAllMocks()
+    jest.clearAllMocks()
   })
 
   it('finds a version in the cache and adds it to the path', async () => {
-    let toolPath = path.normalize('/cache/golangci-lint/1.23.6/amd64');
-    findSpy.mockImplementation(() => toolPath);
-    await installer("1.23.6")
+    const toolPath = path.normalize('/cache/golangci-lint/1.23.6/amd64')
+    findSpy.mockImplementation(() => toolPath)
+    await installer('1.23.6')
 
-    expect(cnSpy).toHaveBeenCalledWith(`::add-path::${toolPath}${osm.EOL}`);
-  });
+    expect(cnSpy).toHaveBeenCalledWith(`::add-path::${toolPath}${osm.EOL}`)
+  })
 
   it('handles download error', async () => {
-    os.platform = 'linux';
-    os.arch = 'amd64';
+    os.platform = 'linux'
+    os.arch = 'amd64'
 
-    const errMsg = 'unhandled error message';
+    const errMsg = 'unhandled error message'
 
-    findSpy.mockImplementation(() => '');
+    findSpy.mockImplementation(() => '')
     dlSpy.mockImplementation(() => {
-      throw new Error(errMsg);
-    });
+      throw new Error(errMsg)
+    })
 
     let err = new Error()
 
     try {
-      await installer("1.23.6")
+      await installer('1.23.6')
     } catch (e) {
       err = e
     }
 
-    expect(err.message).toBe(`failed to download golangci-lint v1.23.6: ${errMsg}`)
-  });
+    expect(err.message).toBe(
+      `failed to download golangci-lint v1.23.6: ${errMsg}`
+    )
+  })
 
   it('can install', async () => {
-    os.platform = 'linux';
-    os.arch = 'amd64';
+    os.platform = 'linux'
+    os.arch = 'amd64'
 
-    findSpy.mockImplementation(() => '');
-    dlSpy.mockImplementation(() => '/some/temp/path');
-    let toolPath = path.normalize('/cache/golangci-lint/1.23.6/amd64');
-    exSpy.mockImplementation(() => '/some/other/temp/path');
-    cacheSpy.mockImplementation(() => toolPath);
+    findSpy.mockImplementation(() => '')
+    dlSpy.mockImplementation(() => '/some/temp/path')
+    const toolPath = path.normalize('/cache/golangci-lint/1.23.6/amd64')
+    exSpy.mockImplementation(() => '/some/other/temp/path')
+    cacheSpy.mockImplementation(() => toolPath)
 
-    await installer("1.23.6")
+    await installer('1.23.6')
 
-    expect(findSpy).toHaveBeenCalled();
-    expect(dlSpy).toHaveBeenCalled();
-    expect(exSpy).toHaveBeenCalled();
-    expect(cacheSpy).toHaveBeenCalled();
-    expect(cnSpy).toHaveBeenCalledWith(`::add-path::${toolPath}${osm.EOL}`);
+    expect(findSpy).toHaveBeenCalled()
+    expect(dlSpy).toHaveBeenCalled()
+    expect(exSpy).toHaveBeenCalled()
+    expect(cacheSpy).toHaveBeenCalled()
+    expect(cnSpy).toHaveBeenCalledWith(`::add-path::${toolPath}${osm.EOL}`)
   })
 })

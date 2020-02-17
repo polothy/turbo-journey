@@ -1242,6 +1242,44 @@ exports.debug = debug; // for test
 
 /***/ }),
 
+/***/ 169:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const exec_1 = __webpack_require__(986);
+const installer_1 = __webpack_require__(749);
+const toolrunner_1 = __webpack_require__(9);
+function lint(argStr) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let output = '';
+        const args = toolrunner_1.argStringToArray(argStr);
+        args.push('--out-format', 'json');
+        yield exec_1.exec(installer_1.toolName, args, {
+            listeners: {
+                stdout: (data) => {
+                    output += data.toString();
+                }
+            }
+        });
+        return output;
+    });
+}
+exports.lint = lint;
+
+
+/***/ }),
+
 /***/ 198:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -1265,18 +1303,27 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
+const coreCommand = __importStar(__webpack_require__(431));
 const util_1 = __webpack_require__(345);
 const path = __importStar(__webpack_require__(622));
 const installer_1 = __webpack_require__(749);
+const lint_1 = __webpack_require__(169);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const version = core.getInput('version');
             yield installer_1.installer(version);
-            // add problem matchers
-            const matchersPath = path.join(__dirname, '..', 'matchers.json');
-            util_1.print(`##[add-matcher]${matchersPath}`);
+            // Add problem matchers
+            coreCommand.issueCommand('add-matcher', {}, path.join(__dirname, '..', 'matchers.json'));
+            // `::error file=src/main.ts,line=1,col=5,::From Error${os.EOL}`
+            coreCommand.issueCommand('error', {
+                file: 'src/main.ts',
+                line: '1',
+                col: '5'
+            }, 'From issueCommand');
             util_1.print(`golangci-lint::file=src/main.ts,line=1,col=5,severity=error,code=errcheck::You have problems`);
+            const json = yield lint_1.lint(core.getInput('args'));
+            core.info(json);
         }
         catch (error) {
             core.setFailed(error.message);
