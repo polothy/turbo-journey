@@ -1268,24 +1268,16 @@ function lint(argStr) {
             '--out-format',
             'json',
             '--issues-exit-code',
-            '666'
+            '0'
         ];
         args.push(...toolrunner_1.argStringToArray(argStr));
-        try {
-            yield exec_1.exec(installer_1.toolName, args, {
-                listeners: {
-                    stdout: (data) => {
-                        output += data.toString();
-                    }
+        yield exec_1.exec(installer_1.toolName, args, {
+            listeners: {
+                stdout: (data) => {
+                    output += data.toString();
                 }
-            });
-        }
-        catch (e) {
-            // Ignore
-            if (e.code !== 0 && e.code !== 666) {
-                throw new Error(`${installer_1.toolName} failed to run with exit code ${e.code} and message '${e.message}`);
             }
-        }
+        });
         return output;
     });
 }
