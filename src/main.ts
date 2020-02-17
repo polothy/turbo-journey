@@ -21,6 +21,9 @@ async function run(): Promise<void> {
     process.stdout.write(
       `golangci-lint::file=src/main.ts,line=1,col=5,severity=error,code=errcheck::You have problems${os.EOL}`
     )
+    process.stdout.write(
+      `::error file=src/main.ts,line=1,col=5,::From Error${os.EOL}`
+    )
   } catch (error) {
     core.setFailed(error.message)
   }
