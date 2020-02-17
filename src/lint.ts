@@ -5,8 +5,8 @@ import {argStringToArray} from '@actions/exec/lib/toolrunner'
 export async function lint(argStr: string): Promise<string> {
   let output = ''
 
-  const args = argStringToArray(argStr)
-  args.push('--out-format', 'json')
+  const args: string[] = ['run', '--out-format', 'json']
+  args.push(...argStringToArray(argStr))
 
   await exec(toolName, args, {
     listeners: {
