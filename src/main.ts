@@ -20,7 +20,7 @@ async function run(): Promise<void> {
     // console.log(
     //   `golangci-lint::file=src/main.ts,line=1,col=5,severity=error,code=errcheck::You have problems`
     // )
-    process.stdout.write(`::[add-matcher]::${matchersPath}`)
+    process.stdout.write(`::[add-matcher]::${matchersPath}${os.EOL}`)
     process.stdout.write(
       `golangci-lint::file=src/main.ts,line=1,col=5,severity=error,code=errcheck::You have problems${os.EOL}`
     )
