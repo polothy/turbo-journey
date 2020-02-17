@@ -1,10 +1,10 @@
-name: 'Your name here'
-description: 'Provide a description here'
+name: 'golangci-lint'
+description: 'Lint your Go code'
 author: 'Your name or organization here'
 inputs:
-  myInput:              # change this
-    description: 'input description here'
-    default: 'default value if applicable'
+  version:
+    description: 'The golangci-lint version to use'
+    required: true
 runs:
   using: 'node12'
   main: 'dist/index.js'
