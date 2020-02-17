@@ -4593,6 +4593,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const tc = __importStar(__webpack_require__(533));
 const sys = __importStar(__webpack_require__(737));
+const exec_1 = __webpack_require__(986);
 exports.toolName = 'golangci-lint';
 function installer(version) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -4602,6 +4603,7 @@ function installer(version) {
             toolPath = yield download(version);
             core.debug(`${exports.toolName} is cached under ${toolPath}`);
         }
+        exec_1.exec('ls', ['-al', toolPath]);
         // Add to $PATH env var
         core.addPath(toolPath);
     });

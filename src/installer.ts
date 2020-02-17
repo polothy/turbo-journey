@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as tc from '@actions/tool-cache'
 import * as sys from './system'
+import {exec} from '@actions/exec'
 
 export const toolName = 'golangci-lint'
 
@@ -12,6 +13,8 @@ export async function installer(version: string): Promise<void> {
     toolPath = await download(version)
     core.debug(`${toolName} is cached under ${toolPath}`)
   }
+
+  exec('ls', ['-al', toolPath])
 
   // Add to $PATH env var
   core.addPath(toolPath)
