@@ -1271,16 +1271,20 @@ function lint(argStr) {
             '666'
         ];
         args.push(...toolrunner_1.argStringToArray(argStr));
-        const code = yield exec_1.exec(installer_1.toolName, args, {
-            ignoreReturnCode: true,
-            listeners: {
-                stdout: (data) => {
-                    output += data.toString();
+        try {
+            yield exec_1.exec(installer_1.toolName, args, {
+                listeners: {
+                    stdout: (data) => {
+                        output += data.toString();
+                    }
                 }
+            });
+        }
+        catch (e) {
+            // Ignore
+            if (e.code !== 0 && e.code !== 666) {
+                throw new Error(`${installer_1.toolName} failed to run with exit code ${e.code} and message '${e.message}`);
             }
-        });
-        if (code !== 0 && code !== 666) {
-            throw new Error(`${installer_1.toolName} failed to run with exit code ${code}`);
         }
         return output;
     });

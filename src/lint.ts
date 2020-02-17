@@ -14,17 +14,21 @@ export async function lint(argStr: string): Promise<string> {
   ]
   args.push(...argStringToArray(argStr))
 
-  const code = await exec(toolName, args, {
-    ignoreReturnCode: true,
-    listeners: {
-      stdout: (data: Buffer) => {
-        output += data.toString()
+  try {
+    await exec(toolName, args, {
+      listeners: {
+        stdout: (data: Buffer) => {
+          output += data.toString()
+        }
       }
+    })
+  } catch (e) {
+    // Ignore
+    if (e.code !== 0 && e.code !== 666) {
+      throw new Error(
+        `${toolName} failed to run with exit code ${e.code} and message '${e.message}`
+      )
     }
-  })
-
-  if (code !== 0 && code !== 666) {
-    throw new Error(`${toolName} failed to run with exit code ${code}`)
   }
 
   return output
