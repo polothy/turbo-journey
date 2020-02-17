@@ -16,10 +16,7 @@ async function run(): Promise<void> {
 
     // add problem matchers
     const matchersPath = path.join(__dirname, '..', 'matchers.json')
-    // console.log(`::[add-matcher]::${matchersPath}`)
-    // console.log(
-    //   `golangci-lint::file=src/main.ts,line=1,col=5,severity=error,code=errcheck::You have problems`
-    // )
+
     process.stdout.write(`::[add-matcher]::${matchersPath}${os.EOL}`)
     process.stdout.write(
       `golangci-lint::file=src/main.ts,line=1,col=5,severity=error,code=errcheck::You have problems${os.EOL}`
