@@ -75,6 +75,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const wait_1 = __webpack_require__(521);
 const path = __importStar(__webpack_require__(622));
+const os = __importStar(__webpack_require__(87));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -86,8 +87,9 @@ function run() {
             core.setOutput('time', new Date().toTimeString());
             // add problem matchers
             const matchersPath = path.join(__dirname, '..', 'matchers.json');
-            console.log(`::[add-matcher]::${matchersPath}`);
-            console.log(`golangci-lint::file=src/main.ts,line=1,col=5,severity=error,code=errcheck::You have problems`);
+            process.stdout.write(`::[add-matcher]::${matchersPath}${os.EOL}`);
+            process.stdout.write(`golangci-lint::file=src/main.ts,line=1,col=5,severity=error,code=errcheck::You have problems${os.EOL}`);
+            process.stdout.write(`::error file=src/main.ts,line=1,col=5,::From Error${os.EOL}`);
         }
         catch (error) {
             core.setFailed(error.message);
