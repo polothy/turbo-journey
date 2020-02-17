@@ -1263,15 +1263,25 @@ const toolrunner_1 = __webpack_require__(9);
 function lint(argStr) {
     return __awaiter(this, void 0, void 0, function* () {
         let output = '';
-        const args = ['run', '--out-format', 'json'];
+        const args = [
+            'run',
+            '--out-format',
+            'json',
+            '--issues-exit-code',
+            '666'
+        ];
         args.push(...toolrunner_1.argStringToArray(argStr));
-        yield exec_1.exec(installer_1.toolName, args, {
+        const code = yield exec_1.exec(installer_1.toolName, args, {
+            ignoreReturnCode: true,
             listeners: {
                 stdout: (data) => {
                     output += data.toString();
                 }
             }
         });
+        if (code !== 0 && code !== 666) {
+            throw new Error(`${installer_1.toolName} failed to run with exit code ${code}`);
+        }
         return output;
     });
 }
