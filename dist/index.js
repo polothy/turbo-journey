@@ -1345,11 +1345,15 @@ const lint_1 = __webpack_require__(169);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            core.startGroup('Setup');
             const version = core.getInput('version');
             yield installer_1.installer(version);
+            core.endGroup();
             // Add problem matchers
             coreCommand.issueCommand('add-matcher', {}, path.join(__dirname, '..', 'matchers.json'));
+            core.startGroup('Linting');
             const linter = yield lint_1.lint(core.getInput('args'));
+            core.endGroup;
             lint_1.report(linter);
         }
         catch (error) {
