@@ -47,7 +47,7 @@ export function report(linter: Linter): boolean {
 
   let result = false
   for (const issue of linter.Issues) {
-    const fixable = issue.Replacement ? ', auto-fixable)' : ''
+    const fixable = issue.Replacement ? ', auto-fixable' : ''
 
     if (issue.Replacement) {
       result = true
