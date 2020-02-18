@@ -5,11 +5,19 @@ import * as ioUtil from '@actions/io/lib/io-util'
 import {createHash} from 'crypto'
 import * as fs from 'fs'
 
+/**
+ * The binary name
+ */
 export const toolName = 'golangci-lint'
 
+/**
+ * Install the tool
+ * @param version the version to install
+ * @param checksum optionally provide a checksum to validate the download
+ */
 export async function installer(
   version: string,
-  checksum: string
+  checksum?: string
 ): Promise<void> {
   // Check for cached installation
   let toolPath: string = tc.find(toolName, version)
@@ -23,7 +31,12 @@ export async function installer(
   core.addPath(toolPath)
 }
 
-async function download(version: string, checksum: string): Promise<string> {
+/**
+ * Actually perform the tool download and verify checksum if passed
+ * @param version the version to install
+ * @param checksum optionally provide a checksum to validate the download
+ */
+async function download(version: string, checksum?: string): Promise<string> {
   const arch = sys.getArch()
   const platform = sys.getPlatform()
 
@@ -42,7 +55,7 @@ async function download(version: string, checksum: string): Promise<string> {
     )
   }
 
-  checksumVerify(checksum, downloadPath)
+  checksumVerify(downloadPath, checksum)
 
   core.info(`📦 extracting ${toolName}@v${version}`)
   const extractPath = await tc.extractTar(downloadPath)
@@ -55,8 +68,13 @@ async function download(version: string, checksum: string): Promise<string> {
   return await tc.cacheDir(`${extractPath}/${name}`, toolName, version)
 }
 
-function checksumVerify(checksum: string, path: string): void {
-  if (checksum === '') {
+/**
+ * Verify the file against checksum
+ * @param path file path to verify
+ * @param checksum optionally provide a checksum to validate the file
+ */
+function checksumVerify(path: string, checksum?: string): void {
+  if (!checksum) {
     core.info(`⚠️ skipping checksum verify`)
     return
   }

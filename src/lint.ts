@@ -5,6 +5,10 @@ import {argStringToArray} from '@actions/exec/lib/toolrunner'
 import {issueCommand} from '@actions/core/lib/command'
 import * as os from 'os'
 
+/**
+ * Run the linter
+ * @param argStr argument string to pass to the linter
+ */
 export async function lint(argStr: string): Promise<Linter> {
   core.info('🏃 running linter')
 
@@ -33,10 +37,18 @@ export async function lint(argStr: string): Promise<Linter> {
   return toLinter(output)
 }
 
+/**
+ * Decode json to Linter
+ * @param json
+ */
 export function toLinter(json: string): Linter {
   return JSON.parse(json)
 }
 
+/**
+ * Convert Linter to warning and error GitHub annotations
+ * @param linter
+ */
 export function report(linter: Linter): boolean {
   if (linter.Issues === null) {
     core.info(`✅ no linter issues found!`)

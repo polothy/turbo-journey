@@ -1270,6 +1270,10 @@ const installer_1 = __webpack_require__(749);
 const toolrunner_1 = __webpack_require__(9);
 const command_1 = __webpack_require__(431);
 const os = __importStar(__webpack_require__(87));
+/**
+ * Run the linter
+ * @param argStr argument string to pass to the linter
+ */
 function lint(argStr) {
     return __awaiter(this, void 0, void 0, function* () {
         core.info('🏃 running linter');
@@ -1295,10 +1299,18 @@ function lint(argStr) {
     });
 }
 exports.lint = lint;
+/**
+ * Decode json to Linter
+ * @param json
+ */
 function toLinter(json) {
     return JSON.parse(json);
 }
 exports.toLinter = toLinter;
+/**
+ * Convert Linter to warning and error GitHub annotations
+ * @param linter
+ */
 function report(linter) {
     if (linter.Issues === null) {
         core.info(`✅ no linter issues found!`);
@@ -3292,6 +3304,11 @@ exports.getState = getState;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(470);
+/**
+ * Convert input from string into boolean
+ * @param name name of the input to get
+ * @param options optional. See InputOptions.
+ */
 function getInputBoolean(name, options) {
     return (core_1.getInput(name, options) || 'false').toUpperCase() === 'TRUE';
 }
@@ -4572,6 +4589,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const os = __importStar(__webpack_require__(87));
+/**
+ * Get the platform as Go would expect it to be
+ */
 function getPlatform() {
     let plat = os.platform();
     if (plat === 'win32') {
@@ -4580,6 +4600,9 @@ function getPlatform() {
     return plat;
 }
 exports.getPlatform = getPlatform;
+/**
+ * Get the arch as Go would expect it to be
+ */
 function getArch() {
     let arch = os.arch();
     switch (arch) {
@@ -4632,7 +4655,15 @@ const sys = __importStar(__webpack_require__(737));
 const ioUtil = __importStar(__webpack_require__(672));
 const crypto_1 = __webpack_require__(417);
 const fs = __importStar(__webpack_require__(747));
+/**
+ * The binary name
+ */
 exports.toolName = 'golangci-lint';
+/**
+ * Install the tool
+ * @param version the version to install
+ * @param checksum optionally provide a checksum to validate the download
+ */
 function installer(version, checksum) {
     return __awaiter(this, void 0, void 0, function* () {
         // Check for cached installation
@@ -4646,6 +4677,11 @@ function installer(version, checksum) {
     });
 }
 exports.installer = installer;
+/**
+ * Actually perform the tool download and verify checksum if passed
+ * @param version the version to install
+ * @param checksum optionally provide a checksum to validate the download
+ */
 function download(version, checksum) {
     return __awaiter(this, void 0, void 0, function* () {
         const arch = sys.getArch();
@@ -4660,7 +4696,7 @@ function download(version, checksum) {
         catch (err) {
             throw new Error(`failed to download ${exports.toolName} v${version}: ${err.message}`);
         }
-        checksumVerify(checksum, downloadPath);
+        checksumVerify(downloadPath, checksum);
         core.info(`📦 extracting ${exports.toolName}@v${version}`);
         const extractPath = yield tc.extractTar(downloadPath);
         // Bin is actually inside a folder from the tar
@@ -4670,8 +4706,13 @@ function download(version, checksum) {
         return yield tc.cacheDir(`${extractPath}/${name}`, exports.toolName, version);
     });
 }
-function checksumVerify(checksum, path) {
-    if (checksum === '') {
+/**
+ * Verify the file against checksum
+ * @param path file path to verify
+ * @param checksum optionally provide a checksum to validate the file
+ */
+function checksumVerify(path, checksum) {
+    if (!checksum) {
         core.info(`⚠️ skipping checksum verify`);
         return;
     }
