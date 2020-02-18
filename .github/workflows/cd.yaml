@@ -51,7 +51,7 @@ jobs:
           git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           if git show-ref --tags --quiet --verify -- "refs/tags/$VERSION"; then
             echo "::error file=VERSION,line=1,col=0::This version already exists, please bump according to semver."
-            return 1
+            exit 1
           fi
 
           echo "::set-env name=VERSION::$VERSION"

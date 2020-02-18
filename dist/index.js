@@ -1268,7 +1268,6 @@ const exec_1 = __webpack_require__(986);
 const core = __importStar(__webpack_require__(470));
 const installer_1 = __webpack_require__(749);
 const toolrunner_1 = __webpack_require__(9);
-const command_1 = __webpack_require__(431);
 const os = __importStar(__webpack_require__(87));
 /**
  * Run the linter
@@ -1320,14 +1319,12 @@ function report(linter) {
     let result = false;
     for (const issue of linter.Issues) {
         const fixable = issue.Replacement ? ', auto-fixable' : '';
+        const severity = issue.Replacement ? 'error' : 'warning';
+        const message = `${issue.Text} (${issue.FromLinter}${fixable})`;
         if (issue.Replacement) {
             result = true;
         }
-        command_1.issueCommand(issue.Replacement ? 'error' : 'warning', {
-            file: issue.Pos.Filename,
-            line: String(issue.Pos.Line),
-            col: String(issue.Pos.Column)
-        }, `${issue.Text} (${issue.FromLinter}${fixable})`);
+        process.stdout.write(`::${severity} file=${issue.Pos.Filename},line=${issue.Pos.Line},col=${issue.Pos.Column}::${message}`);
     }
     return result;
 }
