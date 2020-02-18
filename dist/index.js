@@ -1272,7 +1272,7 @@ const coreCommand = __importStar(__webpack_require__(431));
 const os = __importStar(__webpack_require__(87));
 function lint(argStr) {
     return __awaiter(this, void 0, void 0, function* () {
-        let output = '';
+        core.info('🏃 Linting...');
         const args = [
             'run',
             '--out-format',
@@ -1281,6 +1281,7 @@ function lint(argStr) {
             '0'
         ];
         args.push(...toolrunner_1.argStringToArray(argStr));
+        let output = '';
         yield exec_1.exec(installer_1.toolName, args, {
             listeners: {
                 stdout: (data) => {
@@ -1288,6 +1289,7 @@ function lint(argStr) {
                 }
             }
         });
+        // The output from the command has no newline, add one here.
         process.stdout.write(os.EOL);
         return toLinter(output);
     });
@@ -1302,7 +1304,7 @@ function report(linter) {
         core.info(`✅ no linter issues found!`);
         return;
     }
-    core.info(`⚠️ linter found issues!`);
+    core.warning(`⚠️ linter found issues!`);
     for (const issue of linter.Issues) {
         const fixable = issue.Replacement ? ', auto-fixable)' : '';
         coreCommand.issueCommand(issue.Replacement ? 'error' : 'warning', // auto-fixable == error
@@ -1348,15 +1350,11 @@ const lint_1 = __webpack_require__(169);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            core.startGroup('Setup');
             const version = core.getInput('version');
             yield installer_1.installer(version);
-            core.endGroup();
             // Add problem matchers
             coreCommand.issueCommand('add-matcher', {}, path.join(__dirname, '..', 'matchers.json'));
-            core.startGroup('🏃 Linting');
             const linter = yield lint_1.lint(core.getInput('args'));
-            core.endGroup;
             lint_1.report(linter);
         }
         catch (error) {

@@ -1,20 +1,6 @@
 {
   "Issues": [
     {
-      "FromLinter": "deadcode",
-      "Text": "`unused` is unused",
-      "SourceLines": [
-        "func unused() {"
-      ],
-      "Replacement": null,
-      "Pos": {
-        "Filename": "main.go",
-        "Offset": 126,
-        "Line": 13,
-        "Column": 6
-      }
-    },
-    {
       "FromLinter": "errcheck",
       "Text": "Error return value of `printer` is not checked",
       "SourceLines": [
@@ -23,9 +9,43 @@
       "Replacement": null,
       "Pos": {
         "Filename": "main.go",
-        "Offset": 183,
+        "Offset": 182,
         "Line": 18,
         "Column": 9
+      }
+    },
+    {
+      "FromLinter": "deadcode",
+      "Text": "`unused` is unused",
+      "SourceLines": [
+        "func unused() {"
+      ],
+      "Replacement": null,
+      "Pos": {
+        "Filename": "main.go",
+        "Offset": 125,
+        "Line": 13,
+        "Column": 6
+      }
+    },
+    {
+      "FromLinter": "gofmt",
+      "Text": "File is not `gofmt`-ed with `-s`",
+      "SourceLines": [
+        "\"os\""
+      ],
+      "Replacement": {
+        "NeedOnlyDelete": false,
+        "NewLines": [
+          "\t\"os\""
+        ],
+        "Inline": null
+      },
+      "Pos": {
+        "Filename": "main.go",
+        "Offset": 0,
+        "Line": 5,
+        "Column": 0
       }
     }
   ],
@@ -115,7 +135,8 @@
         "EnabledByDefault": true
       },
       {
-        "Name": "gofmt"
+        "Name": "gofmt",
+        "Enabled": true
       },
       {
         "Name": "goimports"

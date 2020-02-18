@@ -6,7 +6,7 @@ import * as coreCommand from '@actions/core/lib/command'
 import * as os from 'os'
 
 export async function lint(argStr: string): Promise<Linter> {
-  let output = ''
+  core.info('🏃 Linting...')
 
   const args: string[] = [
     'run',
@@ -17,6 +17,8 @@ export async function lint(argStr: string): Promise<Linter> {
   ]
   args.push(...argStringToArray(argStr))
 
+  let output = ''
+
   await exec(toolName, args, {
     listeners: {
       stdout: (data: Buffer) => {
@@ -25,6 +27,7 @@ export async function lint(argStr: string): Promise<Linter> {
     }
   })
 
+  // The output from the command has no newline, add one here.
   process.stdout.write(os.EOL)
 
   return toLinter(output)
@@ -40,7 +43,7 @@ export function report(linter: Linter): void {
     return
   }
 
-  core.info(`⚠️ linter found issues!`)
+  core.warning(`⚠️ linter found issues!`)
 
   for (const issue of linter.Issues) {
     const fixable = issue.Replacement ? ', auto-fixable)' : ''
