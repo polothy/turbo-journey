@@ -122,7 +122,8 @@ https://github.com/golangci/golangci-lint/releases
 
 `golangci-lint-X.Y.Z-checksums.txt`
 
+`linux-amd64`
 
 ```
-9e14ff216092918510ebf7550303a267136f43ce0359cc67f3f8744c217f88f8  golangci-lint-1.23.6-linux-arm64.tar.gz
+9a00786e1671f9ddbc8eeed51fe85825bcb10a2586ac8ab510c4ceb1ec499729  golangci-lint-1.23.6-linux-amd64.tar.gz
 ```
