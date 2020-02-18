@@ -4,11 +4,23 @@ import {lint, report} from './lint'
 
 async function run(): Promise<void> {
   try {
-    const version: string = core.getInput('version')
+    const failOnIssue =
+      (core.getInput('failOnIssue') || 'false').toUpperCase() === 'TRUE'
+    const failOnFixable =
+      (core.getInput('failOnFixable') || 'false').toUpperCase() === 'TRUE'
+
+    const version: string = core.getInput('version', {required: true})
     await installer(version)
 
     const linter = await lint(core.getInput('args'))
-    report(linter)
+    const fixable = report(linter)
+
+    if (failOnIssue && linter.Issues) {
+      core.setFailed('Failing job due to finding issues')
+    }
+    if (failOnFixable && fixable) {
+      core.setFailed('Failing job due to finding auto-fixable issues')
+    }
   } catch (error) {
     core.setFailed(error.message)
   }

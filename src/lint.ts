@@ -37,19 +37,23 @@ export function toLinter(json: string): Linter {
   return JSON.parse(json)
 }
 
-export function report(linter: Linter): void {
+export function report(linter: Linter): boolean {
   if (linter.Issues === null) {
     core.info(`✅ no linter issues found!`)
-    return
+    return false
   }
 
-  core.warning(`⚠️ linter found issues!`)
+  core.info(`⚠️ linter found issues!`)
 
+  let result = false
   for (const issue of linter.Issues) {
     const fixable = issue.Replacement ? ', auto-fixable)' : ''
 
+    if (issue.Replacement) {
+      result = true
+    }
     coreCommand.issueCommand(
-      issue.Replacement ? 'error' : 'warning', // auto-fixable == error
+      issue.Replacement ? 'error' : 'warning',
       {
         file: issue.Pos.Filename,
         line: String(issue.Pos.Line),
@@ -58,6 +62,7 @@ export function report(linter: Linter): void {
       `${issue.Text} (${issue.FromLinter}${fixable})`
     )
   }
+  return result
 }
 
 export interface Linter {

@@ -1302,18 +1302,22 @@ exports.toLinter = toLinter;
 function report(linter) {
     if (linter.Issues === null) {
         core.info(`✅ no linter issues found!`);
-        return;
+        return false;
     }
-    core.warning(`⚠️ linter found issues!`);
+    core.info(`⚠️ linter found issues!`);
+    let result = false;
     for (const issue of linter.Issues) {
         const fixable = issue.Replacement ? ', auto-fixable)' : '';
-        coreCommand.issueCommand(issue.Replacement ? 'error' : 'warning', // auto-fixable == error
-        {
+        if (issue.Replacement) {
+            result = true;
+        }
+        coreCommand.issueCommand(issue.Replacement ? 'error' : 'warning', {
             file: issue.Pos.Filename,
             line: String(issue.Pos.Line),
             col: String(issue.Pos.Column)
         }, `${issue.Text} (${issue.FromLinter}${fixable})`);
     }
+    return result;
 }
 exports.report = report;
 
@@ -1348,10 +1352,18 @@ const lint_1 = __webpack_require__(169);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const version = core.getInput('version');
+            const failOnIssue = (core.getInput('failOnIssue') || 'false').toUpperCase() === 'TRUE';
+            const failOnFixable = (core.getInput('failOnFixable') || 'false').toUpperCase() === 'TRUE';
+            const version = core.getInput('version', { required: true });
             yield installer_1.installer(version);
             const linter = yield lint_1.lint(core.getInput('args'));
-            lint_1.report(linter);
+            const fixable = lint_1.report(linter);
+            if (failOnIssue && linter.Issues) {
+                core.setFailed('Failing job due to finding issues');
+            }
+            if (failOnFixable && fixable) {
+                core.setFailed('Failing job due to finding auto-fixable issues');
+            }
         }
         catch (error) {
             core.setFailed(error.message);

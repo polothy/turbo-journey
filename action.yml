@@ -8,6 +8,14 @@ inputs:
   args:
     description: 'Arguments to pass to golangci-lint'
     required: false
+  failOnFixable:
+    description: 'Fail the job if any auto-fixable issue has been found'
+    default: 'true'
+    required: false
+  failOnIssue:
+    description: 'Fail the job if any issue has been found'
+    default: 'false'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'
