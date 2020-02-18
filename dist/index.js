@@ -1269,6 +1269,7 @@ const core = __importStar(__webpack_require__(470));
 const installer_1 = __webpack_require__(749);
 const toolrunner_1 = __webpack_require__(9);
 const coreCommand = __importStar(__webpack_require__(431));
+const os = __importStar(__webpack_require__(87));
 function lint(argStr) {
     return __awaiter(this, void 0, void 0, function* () {
         let output = '';
@@ -1287,6 +1288,7 @@ function lint(argStr) {
                 }
             }
         });
+        process.stdout.write(os.EOL);
         return toLinter(output);
     });
 }

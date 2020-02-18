@@ -3,6 +3,7 @@ import * as core from '@actions/core'
 import {toolName} from './installer'
 import {argStringToArray} from '@actions/exec/lib/toolrunner'
 import * as coreCommand from '@actions/core/lib/command'
+import * as os from 'os'
 
 export async function lint(argStr: string): Promise<Linter> {
   let output = ''
@@ -23,6 +24,8 @@ export async function lint(argStr: string): Promise<Linter> {
       }
     }
   })
+
+  process.stdout.write(os.EOL)
 
   return toLinter(output)
 }
