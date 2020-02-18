@@ -17,10 +17,10 @@ async function run(): Promise<void> {
     const fixable = report(linter)
 
     if (failOnIssue && linter.Issues) {
-      core.setFailed('🔥 Failing job due to finding lint issues')
+      core.setFailed('🔥 failing job due to finding lint issues')
     }
     if (failOnFixable && fixable) {
-      core.setFailed('🔥 Failing job due to finding auto-fixable lint issues')
+      core.setFailed('🔥 failing job due to finding auto-fixable lint issues')
     }
   } catch (error) {
     core.setFailed(`🔥 ${error.message}`)

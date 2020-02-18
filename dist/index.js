@@ -1272,7 +1272,7 @@ const command_1 = __webpack_require__(431);
 const os = __importStar(__webpack_require__(87));
 function lint(argStr) {
     return __awaiter(this, void 0, void 0, function* () {
-        core.info('🏃 Linting...');
+        core.info('🏃 running linter');
         const args = [
             'run',
             '--out-format',
@@ -1360,10 +1360,10 @@ function run() {
             const linter = yield lint_1.lint(core.getInput('args'));
             const fixable = lint_1.report(linter);
             if (failOnIssue && linter.Issues) {
-                core.setFailed('🔥 Failing job due to finding lint issues');
+                core.setFailed('🔥 failing job due to finding lint issues');
             }
             if (failOnFixable && fixable) {
-                core.setFailed('🔥 Failing job due to finding auto-fixable lint issues');
+                core.setFailed('🔥 failing job due to finding auto-fixable lint issues');
             }
         }
         catch (error) {
@@ -4636,7 +4636,7 @@ function download(version, checksum) {
         const name = `golangci-lint-${version}-${platform}-${arch}`;
         const downloadUrl = `https://github.com/golangci/golangci-lint/releases/download/v${version}/${name}.tar.gz`;
         let downloadPath = '';
-        core.info(`⬇️ Downloading ${downloadUrl}...`);
+        core.info(`⬇️ downloading ${downloadUrl}`);
         try {
             downloadPath = yield tc.downloadTool(downloadUrl);
         }
@@ -4644,7 +4644,7 @@ function download(version, checksum) {
             throw new Error(`failed to download ${exports.toolName} v${version}: ${err.message}`);
         }
         checksumVerify(checksum, downloadPath);
-        core.info(`📦 Extracting ${exports.toolName}@v${version}...`);
+        core.info(`📦 extracting ${exports.toolName}@v${version}`);
         const extractPath = yield tc.extractTar(downloadPath);
         // Bin is actually inside a folder from the tar
         if (!(yield ioUtil.exists(`${extractPath}/${name}/${exports.toolName}`))) {

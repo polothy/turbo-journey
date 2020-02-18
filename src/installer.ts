@@ -32,7 +32,7 @@ async function download(version: string, checksum: string): Promise<string> {
 
   let downloadPath = ''
 
-  core.info(`⬇️ Downloading ${downloadUrl}...`)
+  core.info(`⬇️ downloading ${downloadUrl}`)
 
   try {
     downloadPath = await tc.downloadTool(downloadUrl)
@@ -44,7 +44,7 @@ async function download(version: string, checksum: string): Promise<string> {
 
   checksumVerify(checksum, downloadPath)
 
-  core.info(`📦 Extracting ${toolName}@v${version}...`)
+  core.info(`📦 extracting ${toolName}@v${version}`)
   const extractPath = await tc.extractTar(downloadPath)
 
   // Bin is actually inside a folder from the tar

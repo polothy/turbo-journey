@@ -6,7 +6,7 @@ import {issueCommand} from '@actions/core/lib/command'
 import * as os from 'os'
 
 export async function lint(argStr: string): Promise<Linter> {
-  core.info('🏃 Linting...')
+  core.info('🏃 running linter')
 
   const args: string[] = [
     'run',
