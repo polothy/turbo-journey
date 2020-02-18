@@ -1324,7 +1324,7 @@ function report(linter) {
         if (issue.Replacement) {
             result = true;
         }
-        process.stdout.write(`::${severity} file=${issue.Pos.Filename},line=${issue.Pos.Line},col=${issue.Pos.Column}::${message}`);
+        process.stdout.write(`::${severity} file=${issue.Pos.Filename},line=${issue.Pos.Line},col=${issue.Pos.Column}::${message}${os.EOL}`);
     }
     return result;
 }

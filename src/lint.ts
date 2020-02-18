@@ -67,7 +67,7 @@ export function report(linter: Linter): boolean {
     }
 
     process.stdout.write(
-      `::${severity} file=${issue.Pos.Filename},line=${issue.Pos.Line},col=${issue.Pos.Column}::${message}`
+      `::${severity} file=${issue.Pos.Filename},line=${issue.Pos.Line},col=${issue.Pos.Column}::${message}${os.EOL}`
     )
   }
   return result
