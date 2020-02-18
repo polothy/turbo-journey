@@ -18,7 +18,7 @@ async function run(): Promise<void> {
       path.join(__dirname, '..', 'matchers.json')
     )
 
-    core.startGroup('Linting')
+    core.startGroup('🏃 Linting')
     const linter = await lint(core.getInput('args'))
     core.endGroup
 

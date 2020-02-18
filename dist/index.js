@@ -1300,6 +1300,7 @@ function report(linter) {
         core.info(`✅ no linter issues found!`);
         return;
     }
+    core.info(`⚠️ linter found issues!`);
     for (const issue of linter.Issues) {
         const fixable = issue.Replacement ? ', auto-fixable)' : '';
         coreCommand.issueCommand(issue.Replacement ? 'error' : 'warning', // auto-fixable == error
@@ -1351,7 +1352,7 @@ function run() {
             core.endGroup();
             // Add problem matchers
             coreCommand.issueCommand('add-matcher', {}, path.join(__dirname, '..', 'matchers.json'));
-            core.startGroup('Linting');
+            core.startGroup('🏃 Linting');
             const linter = yield lint_1.lint(core.getInput('args'));
             core.endGroup;
             lint_1.report(linter);

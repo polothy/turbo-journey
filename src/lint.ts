@@ -37,6 +37,8 @@ export function report(linter: Linter): void {
     return
   }
 
+  core.info(`⚠️ linter found issues!`)
+
   for (const issue of linter.Issues) {
     const fixable = issue.Replacement ? ', auto-fixable)' : ''
 
