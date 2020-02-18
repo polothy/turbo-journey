@@ -39,7 +39,7 @@ jobs:
           if ! git diff --quiet; then
             git status --short
             echo "There should be no dirty files, likely need to run 'npm run build && npm run pack' to update the dist"
-            return 1
+            exit 1
           fi
 
       - name: Version
