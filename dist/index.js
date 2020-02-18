@@ -4643,7 +4643,7 @@ function download(version, checksum) {
         catch (err) {
             throw new Error(`failed to download ${exports.toolName} v${version}: ${err.message}`);
         }
-        checksumVerify(downloadPath, checksum);
+        checksumVerify(checksum, downloadPath);
         core.info(`📦 Extracting ${exports.toolName}@v${version}...`);
         const extractPath = yield tc.extractTar(downloadPath);
         // Bin is actually inside a folder from the tar

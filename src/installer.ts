@@ -42,7 +42,7 @@ async function download(version: string, checksum: string): Promise<string> {
     )
   }
 
-  checksumVerify(downloadPath, checksum)
+  checksumVerify(checksum, downloadPath)
 
   core.info(`📦 Extracting ${toolName}@v${version}...`)
   const extractPath = await tc.extractTar(downloadPath)
