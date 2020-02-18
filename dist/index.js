@@ -1268,7 +1268,7 @@ const exec_1 = __webpack_require__(986);
 const core = __importStar(__webpack_require__(470));
 const installer_1 = __webpack_require__(749);
 const toolrunner_1 = __webpack_require__(9);
-const coreCommand = __importStar(__webpack_require__(431));
+const command_1 = __webpack_require__(431);
 const os = __importStar(__webpack_require__(87));
 function lint(argStr) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -1311,7 +1311,7 @@ function report(linter) {
         if (issue.Replacement) {
             result = true;
         }
-        coreCommand.issueCommand(issue.Replacement ? 'error' : 'warning', {
+        command_1.issueCommand(issue.Replacement ? 'error' : 'warning', {
             file: issue.Pos.Filename,
             line: String(issue.Pos.Line),
             col: String(issue.Pos.Column)
@@ -1355,18 +1355,19 @@ function run() {
             const failOnIssue = (core.getInput('failOnIssue') || 'false').toUpperCase() === 'TRUE';
             const failOnFixable = (core.getInput('failOnFixable') || 'false').toUpperCase() === 'TRUE';
             const version = core.getInput('version', { required: true });
-            yield installer_1.installer(version);
+            const checksum = core.getInput('checksum');
+            yield installer_1.installer(version, checksum);
             const linter = yield lint_1.lint(core.getInput('args'));
             const fixable = lint_1.report(linter);
             if (failOnIssue && linter.Issues) {
-                core.setFailed('Failing job due to finding issues');
+                core.setFailed('🔥 Failing job due to finding lint issues');
             }
             if (failOnFixable && fixable) {
-                core.setFailed('Failing job due to finding auto-fixable issues');
+                core.setFailed('🔥 Failing job due to finding auto-fixable lint issues');
             }
         }
         catch (error) {
-            core.setFailed(error.message);
+            core.setFailed(`🔥 ${error.message}`);
         }
     });
 }
@@ -4612,13 +4613,15 @@ const core = __importStar(__webpack_require__(470));
 const tc = __importStar(__webpack_require__(533));
 const sys = __importStar(__webpack_require__(737));
 const ioUtil = __importStar(__webpack_require__(672));
+const crypto_1 = __webpack_require__(417);
+const fs = __importStar(__webpack_require__(747));
 exports.toolName = 'golangci-lint';
-function installer(version) {
+function installer(version, checksum) {
     return __awaiter(this, void 0, void 0, function* () {
         // Check for cached installation
         let toolPath = tc.find(exports.toolName, version);
         if (!toolPath) {
-            toolPath = yield download(version);
+            toolPath = yield download(version, checksum);
             core.debug(`${exports.toolName} is cached under ${toolPath}`);
         }
         // Add to $PATH env var
@@ -4626,24 +4629,21 @@ function installer(version) {
     });
 }
 exports.installer = installer;
-function download(version) {
+function download(version, checksum) {
     return __awaiter(this, void 0, void 0, function* () {
         const arch = sys.getArch();
         const platform = sys.getPlatform();
         const name = `golangci-lint-${version}-${platform}-${arch}`;
         const downloadUrl = `https://github.com/golangci/golangci-lint/releases/download/v${version}/${name}.tar.gz`;
-        // const checksumUrl = `https://github.com/golangci/golangci-lint/releases/download/v${version}/golangci-lint-${version}-checksums.txt`
         let downloadPath = '';
         core.info(`⬇️ Downloading ${downloadUrl}...`);
         try {
             downloadPath = yield tc.downloadTool(downloadUrl);
         }
         catch (err) {
-            core.debug(err);
             throw new Error(`failed to download ${exports.toolName} v${version}: ${err.message}`);
         }
-        // TODO: download checksums and verify: https://github.com/golangci/golangci-lint/blob/master/install.sh
-        // See crypto.createHash at https://nodejs.org/api/crypto.html to hash a file.
+        checksumVerify(downloadPath, checksum);
         core.info(`📦 Extracting ${exports.toolName}@v${version}...`);
         const extractPath = yield tc.extractTar(downloadPath);
         // Bin is actually inside a folder from the tar
@@ -4652,6 +4652,20 @@ function download(version) {
         }
         return yield tc.cacheDir(`${extractPath}/${name}`, exports.toolName, version);
     });
+}
+function checksumVerify(checksum, path) {
+    if (checksum === '') {
+        core.info(`⚠️ skipping checksum verify`);
+        return;
+    }
+    const content = fs.readFileSync(path);
+    const hash = crypto_1.createHash('sha256');
+    hash.update(content);
+    const sum = hash.digest().toString();
+    if (sum !== checksum) {
+        throw new Error(`failed to verify checksum! Expected ${checksum} but got ${sum}`);
+    }
+    core.info(`✅ checksum verified!`);
 }
 
 

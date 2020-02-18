@@ -2,7 +2,7 @@ import {exec} from '@actions/exec'
 import * as core from '@actions/core'
 import {toolName} from './installer'
 import {argStringToArray} from '@actions/exec/lib/toolrunner'
-import * as coreCommand from '@actions/core/lib/command'
+import {issueCommand} from '@actions/core/lib/command'
 import * as os from 'os'
 
 export async function lint(argStr: string): Promise<Linter> {
@@ -52,7 +52,7 @@ export function report(linter: Linter): boolean {
     if (issue.Replacement) {
       result = true
     }
-    coreCommand.issueCommand(
+    issueCommand(
       issue.Replacement ? 'error' : 'warning',
       {
         file: issue.Pos.Filename,

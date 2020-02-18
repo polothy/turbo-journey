@@ -57,7 +57,7 @@ describe('installer', () => {
   it('finds a version in the cache and adds it to the path', async () => {
     const toolPath = path.normalize('/cache/golangci-lint/1.23.6/amd64')
     findSpy.mockImplementation(() => toolPath)
-    await installer('1.23.6')
+    await installer('1.23.6', '')
 
     expect(cnSpy).toHaveBeenCalledWith(`::add-path::${toolPath}${osm.EOL}`)
   })
@@ -76,7 +76,7 @@ describe('installer', () => {
     let err = new Error()
 
     try {
-      await installer('1.23.6')
+      await installer('1.23.6', '')
     } catch (e) {
       err = e
     }
@@ -97,7 +97,7 @@ describe('installer', () => {
     cacheSpy.mockImplementation(() => toolPath)
     ioUtilSpy.mockImplementation(async () => true)
 
-    await installer('1.23.6')
+    await installer('1.23.6', '')
 
     expect(findSpy).toHaveBeenCalled()
     expect(dlSpy).toHaveBeenCalled()

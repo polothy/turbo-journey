@@ -9,20 +9,21 @@ async function run(): Promise<void> {
     const failOnFixable =
       (core.getInput('failOnFixable') || 'false').toUpperCase() === 'TRUE'
 
-    const version: string = core.getInput('version', {required: true})
-    await installer(version)
+    const version = core.getInput('version', {required: true})
+    const checksum = core.getInput('checksum')
+    await installer(version, checksum)
 
     const linter = await lint(core.getInput('args'))
     const fixable = report(linter)
 
     if (failOnIssue && linter.Issues) {
-      core.setFailed('Failing job due to finding issues')
+      core.setFailed('🔥 Failing job due to finding lint issues')
     }
     if (failOnFixable && fixable) {
-      core.setFailed('Failing job due to finding auto-fixable issues')
+      core.setFailed('🔥 Failing job due to finding auto-fixable lint issues')
     }
   } catch (error) {
-    core.setFailed(error.message)
+    core.setFailed(`🔥 ${error.message}`)
   }
 }
 
