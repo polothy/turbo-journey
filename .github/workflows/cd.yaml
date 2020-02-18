@@ -34,6 +34,14 @@ jobs:
           npm install
           npm run all
 
+      - name: Verify no changes
+        run: |
+          if ! git diff --quiet; then
+            git status --short
+            echo "There should be no dirty files, likely need to run 'npm run build && npm run pack' to update the dist"
+            return 1
+          fi
+
       - name: Version
         id: version
         run: |
@@ -43,7 +51,7 @@ jobs:
           git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           if git show-ref --tags --quiet --verify -- "refs/tags/$VERSION"; then
             echo "::error file=VERSION,line=1,col=0::This version already exists, please bump according to semver."
-            return 1;
+            return 1
           fi
 
           echo "::set-env name=VERSION::$VERSION"

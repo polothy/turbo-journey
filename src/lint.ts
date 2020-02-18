@@ -2,7 +2,6 @@ import {exec} from '@actions/exec'
 import * as core from '@actions/core'
 import {toolName} from './installer'
 import {argStringToArray} from '@actions/exec/lib/toolrunner'
-import {issueCommand} from '@actions/core/lib/command'
 import * as os from 'os'
 
 /**
@@ -60,18 +59,15 @@ export function report(linter: Linter): boolean {
   let result = false
   for (const issue of linter.Issues) {
     const fixable = issue.Replacement ? ', auto-fixable' : ''
+    const severity = issue.Replacement ? 'error' : 'warning'
+    const message = `${issue.Text} (${issue.FromLinter}${fixable})`
 
     if (issue.Replacement) {
       result = true
     }
-    issueCommand(
-      issue.Replacement ? 'error' : 'warning',
-      {
-        file: issue.Pos.Filename,
-        line: String(issue.Pos.Line),
-        col: String(issue.Pos.Column)
-      },
-      `${issue.Text} (${issue.FromLinter}${fixable})`
+
+    process.stdout.write(
+      `::${severity} file=${issue.Pos.Filename},line=${issue.Pos.Line},col=${issue.Pos.Column}::${message}`
     )
   }
   return result
