@@ -1256,10 +1256,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const exec_1 = __webpack_require__(986);
+const core = __importStar(__webpack_require__(470));
 const installer_1 = __webpack_require__(749);
 const toolrunner_1 = __webpack_require__(9);
+const coreCommand = __importStar(__webpack_require__(431));
 function lint(argStr) {
     return __awaiter(this, void 0, void 0, function* () {
         let output = '';
@@ -1278,10 +1287,30 @@ function lint(argStr) {
                 }
             }
         });
-        return output;
+        return toLinter(output);
     });
 }
 exports.lint = lint;
+function toLinter(json) {
+    return JSON.parse(json);
+}
+exports.toLinter = toLinter;
+function report(linter) {
+    if (linter.Issues === null) {
+        core.info(`✅ no linter issues found!`);
+        return;
+    }
+    for (const issue of linter.Issues) {
+        const fixable = issue.Replacement ? ', auto-fixable)' : '';
+        coreCommand.issueCommand(issue.Replacement ? 'error' : 'warning', // auto-fixable == error
+        {
+            file: issue.Pos.Filename,
+            line: String(issue.Pos.Line),
+            col: String(issue.Pos.Column)
+        }, `${issue.Text} (${issue.FromLinter}${fixable})`);
+    }
+}
+exports.report = report;
 
 
 /***/ }),
@@ -1310,7 +1339,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const coreCommand = __importStar(__webpack_require__(431));
-const util_1 = __webpack_require__(345);
 const path = __importStar(__webpack_require__(622));
 const installer_1 = __webpack_require__(749);
 const lint_1 = __webpack_require__(169);
@@ -1321,15 +1349,8 @@ function run() {
             yield installer_1.installer(version);
             // Add problem matchers
             coreCommand.issueCommand('add-matcher', {}, path.join(__dirname, '..', 'matchers.json'));
-            // `::error file=src/main.ts,line=1,col=5,::From Error${os.EOL}`
-            coreCommand.issueCommand('error', {
-                file: 'src/main.ts',
-                line: '1',
-                col: '5'
-            }, 'From issueCommand');
-            util_1.print(`golangci-lint::file=src/main.ts,line=1,col=5,severity=error,code=errcheck::You have problems`);
-            const json = yield lint_1.lint(core.getInput('args'));
-            core.info(json);
+            const linter = yield lint_1.lint(core.getInput('args'));
+            lint_1.report(linter);
         }
         catch (error) {
             core.setFailed(error.message);
@@ -2947,28 +2968,6 @@ function coerce (version, options) {
     '.' + (match[3] || '0') +
     '.' + (match[4] || '0'), options)
 }
-
-
-/***/ }),
-
-/***/ 345:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const os = __importStar(__webpack_require__(87));
-function print(m) {
-    process.stdout.write(m + os.EOL);
-}
-exports.print = print;
 
 
 /***/ }),
@@ -4599,7 +4598,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const tc = __importStar(__webpack_require__(533));
 const sys = __importStar(__webpack_require__(737));
-const fs_1 = __webpack_require__(747);
+const ioUtil = __importStar(__webpack_require__(672));
 exports.toolName = 'golangci-lint';
 function installer(version) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -4635,7 +4634,7 @@ function download(version) {
         core.info(`📦 Extracting ${exports.toolName}@v${version}...`);
         const extractPath = yield tc.extractTar(downloadPath);
         // Bin is actually inside a folder from the tar
-        if (!fs_1.existsSync(`${extractPath}/${name}/${exports.toolName}`)) {
+        if (!(yield ioUtil.exists(`${extractPath}/${name}/${exports.toolName}`))) {
             throw new Error(`failed to find ${exports.toolName} v${version} in extracted path`);
         }
         return yield tc.cacheDir(`${extractPath}/${name}`, exports.toolName, version);

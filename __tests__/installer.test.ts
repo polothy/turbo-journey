@@ -2,6 +2,7 @@ import * as tc from '@actions/tool-cache'
 import {installer} from '../src/installer'
 import * as path from 'path'
 import * as osm from 'os'
+import * as ioUtil from '@actions/io/lib/io-util'
 
 describe('installer', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,6 +18,7 @@ describe('installer', () => {
   let dlSpy: jest.SpyInstance
   let exSpy: jest.SpyInstance
   let cacheSpy: jest.SpyInstance
+  let ioUtilSpy: jest.SpyInstance
 
   beforeEach(() => {
     // node 'os'
@@ -32,6 +34,9 @@ describe('installer', () => {
     exSpy = jest.spyOn(tc, 'extractTar')
     cacheSpy = jest.spyOn(tc, 'cacheDir')
     // getSpy = jest.spyOn(im, 'getVersions');
+
+    // @actions/io
+    ioUtilSpy = jest.spyOn(ioUtil, 'exists')
 
     // writes
     cnSpy = jest.spyOn(process.stdout, 'write')
@@ -90,6 +95,7 @@ describe('installer', () => {
     const toolPath = path.normalize('/cache/golangci-lint/1.23.6/amd64')
     exSpy.mockImplementation(() => '/some/other/temp/path')
     cacheSpy.mockImplementation(() => toolPath)
+    ioUtilSpy.mockImplementation(async () => true)
 
     await installer('1.23.6')
 

@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as tc from '@actions/tool-cache'
 import * as sys from './system'
-import {existsSync} from 'fs'
+import * as ioUtil from '@actions/io/lib/io-util'
 
 export const toolName = 'golangci-lint'
 
@@ -47,7 +47,7 @@ async function download(version: string): Promise<string> {
   const extractPath = await tc.extractTar(downloadPath)
 
   // Bin is actually inside a folder from the tar
-  if (!existsSync(`${extractPath}/${name}/${toolName}`)) {
+  if (!(await ioUtil.exists(`${extractPath}/${name}/${toolName}`))) {
     throw new Error(`failed to find ${toolName} v${version} in extracted path`)
   }
 
