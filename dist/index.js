@@ -1349,15 +1349,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const installer_1 = __webpack_require__(749);
 const lint_1 = __webpack_require__(169);
+const input_1 = __webpack_require__(518);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const failOnIssue = (core.getInput('failOnIssue') || 'false').toUpperCase() === 'TRUE';
-            const failOnFixable = (core.getInput('failOnFixable') || 'false').toUpperCase() === 'TRUE';
             const version = core.getInput('version', { required: true });
             const checksum = core.getInput('checksum');
+            const args = core.getInput('args');
+            const failOnIssue = input_1.getInputBoolean('failOnIssue');
+            const failOnFixable = input_1.getInputBoolean('failOnFixable');
             yield installer_1.installer(version, checksum);
-            const linter = yield lint_1.lint(core.getInput('args'));
+            const linter = yield lint_1.lint(args);
             const fixable = lint_1.report(linter);
             if (failOnIssue && linter.Issues) {
                 core.setFailed('🔥 failing job due to finding lint issues');
@@ -3280,6 +3282,21 @@ function getState(name) {
 }
 exports.getState = getState;
 //# sourceMappingURL=core.js.map
+
+/***/ }),
+
+/***/ 518:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = __webpack_require__(470);
+function getInputBoolean(name, options) {
+    return (core_1.getInput(name, options) || 'false').toUpperCase() === 'TRUE';
+}
+exports.getInputBoolean = getInputBoolean;
+
 
 /***/ }),
 
