@@ -4661,7 +4661,7 @@ function checksumVerify(checksum, path) {
     const content = fs.readFileSync(path);
     const hash = crypto_1.createHash('sha256');
     hash.update(content);
-    const sum = hash.digest().toString();
+    const sum = hash.digest('hex');
     if (sum !== checksum) {
         throw new Error(`failed to verify checksum! Expected ${checksum} but got ${sum}`);
     }

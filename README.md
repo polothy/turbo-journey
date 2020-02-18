@@ -118,6 +118,11 @@ with:
 
 ## Random
 
+https://github.com/golangci/golangci-lint/releases
+
+`golangci-lint-X.Y.Z-checksums.txt`
+
+
 ```
 9e14ff216092918510ebf7550303a267136f43ce0359cc67f3f8744c217f88f8  golangci-lint-1.23.6-linux-arm64.tar.gz
 ```

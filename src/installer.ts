@@ -65,7 +65,7 @@ function checksumVerify(checksum: string, path: string): void {
   const hash = createHash('sha256')
   hash.update(content)
 
-  const sum = hash.digest().toString()
+  const sum = hash.digest('hex')
   if (sum !== checksum) {
     throw new Error(
       `failed to verify checksum! Expected ${checksum} but got ${sum}`
