@@ -1,20 +1,71 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+# Go lint action
 
-# Create a JavaScript Action using TypeScript
+Use `golangci-lint` to lint your code.
 
-Use this template to bootstrap the creation of a JavaScript action.:rocket:
+## Usage
 
-This template includes compilication support, tests, a validation workflow, publishing, and versioning guidance.  
+For all possible inputs see [action.yml](action.yml).
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+### Usage: basic
 
-## Create an action from this template
+Go to the [golangci-lint releases](https://github.com/golangci/golangci-lint/releases) page to find
+the release version you would like to use.  Enter that version into the `version` input.
 
-Click the `Use this Template` and provide the new repo details for your action
+```yaml
+steps:
+  - name: lint
+    uses: polothy/turbo-journey@v1
+    with:
+      version: 1.23.6
+```
 
-## Code in Master
+For added security, you can specify a download checksum. To find the checksum, find the
+`golangci-lint-X.Y.Z-checksums.txt` file on the
+[golangci-lint releases](https://github.com/golangci/golangci-lint/releases) page.  Download the file,
+open it, and find the line with `linux-amd64` (or the platform/arch you are using).  It would look like this:
+
+```
+9a00786e1671f9ddbc8eeed51fe85825bcb10a2586ac8ab510c4ceb1ec499729  golangci-lint-1.23.6-linux-amd64.tar.gz
+```
+
+Copy the checksum value enter that into the `checksum` input:
+
+```yaml
+steps:
+  - name: lint
+    uses: polothy/turbo-journey@v1
+    with:
+      version: 1.23.6
+      checksum: 9a00786e1671f9ddbc8eeed51fe85825bcb10a2586ac8ab510c4ceb1ec499729
+```
+
+### Usage: control failure
+
+By default, the action will fail the step if any auto-fixable linting issues were found. 
+
+If you want the step to never fail due to any linting issues, then use `failOnFixable` input:
+
+```yaml
+steps:
+  - name: lint
+    uses: polothy/turbo-journey@v1
+    with:
+      version: 1.23.6
+      failOnFixable: false
+```
+
+If you the step to always fail due to any linting issues, then use `failOnIssue` input:
+
+```yaml
+steps:
+  - name: lint
+    uses: polothy/turbo-journey@v1
+    with:
+      version: 1.23.6
+      failOnIssue: true
+```
+
+## Developing
 
 Install the dependencies  
 ```bash
@@ -38,92 +89,16 @@ $ npm test
 ...
 ```
 
-## Change action.yml
-
-The action.yml contains defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos.  We will create a releases branch and only checkin production modules (core in this case). 
-
-Comment out node_modules in .gitignore and create a releases/v1 branch
+Update the distribution (required for releasing and testing workflow):
 ```bash
-# comment out in distribution branches
-# node_modules/
+$ npm run build && npm run pack
+$ git commit -a dist/index.js -m "Update dist"
 ```
 
-```bash
-$ git checkout -b releases/v1
-$ git commit -a -m "prod dependencies"
-```
+## Helpful resources
 
-```bash
-$ npm prune --production
-$ git add node_modules
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing the releases/v1 branch
-
-```yaml
-uses: actions/typescript-action@releases/v1
-with:
-  milliseconds: 1000
-```
-
-See the [actions tab](https://github.com/actions/javascript-action/actions) for runs of this action! :rocket:
-
-## Usage:
-
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and tested action
-
-```yaml
-uses: actions/typescript-action@v1
-with:
-  milliseconds: 1000
-```
-
-## Random
-
-https://github.com/golangci/golangci-lint/releases
-
-`golangci-lint-X.Y.Z-checksums.txt`
-
-`linux-amd64`
-
-```
-9a00786e1671f9ddbc8eeed51fe85825bcb10a2586ac8ab510c4ceb1ec499729  golangci-lint-1.23.6-linux-amd64.tar.gz
-```
+* [Jest](https://jestjs.io/docs/en/getting-started)
+* [Actions toolkit](https://github.com/actions/toolkit)
+* [setup-go action](https://github.com/actions/setup-go)
+* [GoReleaser action](https://github.com/goreleaser/goreleaser-action)
+* [Javascript action tutorial](https://help.github.com/en/actions/building-actions/creating-a-javascript-action)

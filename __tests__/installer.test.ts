@@ -1,5 +1,5 @@
 import * as tc from '@actions/tool-cache'
-import {installer} from '../src/installer'
+import {checksumVerify, installer} from '../src/installer'
 import * as path from 'path'
 import * as osm from 'os'
 import * as ioUtil from '@actions/io/lib/io-util'
@@ -104,5 +104,22 @@ describe('installer', () => {
     expect(exSpy).toHaveBeenCalled()
     expect(cacheSpy).toHaveBeenCalled()
     expect(cnSpy).toHaveBeenCalledWith(`::add-path::${toolPath}${osm.EOL}`)
+  })
+
+  it('can verify checksum', async () => {
+    checksumVerify(
+      path.join(__dirname, 'no-issues.json'),
+      '216a955944056e360a79eb228a25efaa6cc2ed49c712ac88b95d8e470d90d374'
+    )
+  })
+
+  it('can fail to verify checksum', async () => {
+    expect(() => {
+      checksumVerify(path.join(__dirname, 'no-issues.json'), 'abc123')
+    }).toThrow()
+  })
+
+  it('checksum is optional', async () => {
+    checksumVerify(path.join(__dirname, 'no-issues.json'))
   })
 })

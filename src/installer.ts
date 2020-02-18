@@ -73,7 +73,7 @@ async function download(version: string, checksum?: string): Promise<string> {
  * @param path file path to verify
  * @param checksum optionally provide a checksum to validate the file
  */
-function checksumVerify(path: string, checksum?: string): void {
+export function checksumVerify(path: string, checksum?: string): void {
   if (!checksum) {
     core.info(`⚠️ skipping checksum verify`)
     return

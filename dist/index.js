@@ -4725,6 +4725,7 @@ function checksumVerify(path, checksum) {
     }
     core.info(`✅ checksum verified!`);
 }
+exports.checksumVerify = checksumVerify;
 
 
 /***/ }),
