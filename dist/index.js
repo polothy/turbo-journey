@@ -1343,8 +1343,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
-const coreCommand = __importStar(__webpack_require__(431));
-const path = __importStar(__webpack_require__(622));
 const installer_1 = __webpack_require__(749);
 const lint_1 = __webpack_require__(169);
 function run() {
@@ -1352,8 +1350,6 @@ function run() {
         try {
             const version = core.getInput('version');
             yield installer_1.installer(version);
-            // Add problem matchers
-            coreCommand.issueCommand('add-matcher', {}, path.join(__dirname, '..', 'matchers.json'));
             const linter = yield lint_1.lint(core.getInput('args'));
             lint_1.report(linter);
         }
