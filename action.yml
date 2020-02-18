@@ -7,6 +7,7 @@ inputs:
     required: true
   checksum:
     description: 'The checksum used to verify the golangci-lint download'
+    default: ''
     required: false
   args:
     description: 'Arguments to pass to golangci-lint'
